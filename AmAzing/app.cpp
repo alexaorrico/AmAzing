@@ -193,7 +193,7 @@ Vector2d rotate2d(Vector2d vector, double rotSpeed) {
 void App::updateData(double frameTime) {
     double moveSpeed = frameTime * 4;
     double rotSpeed = frameTime * 2;
-    if (state->keyHandler.isPressed(SDLK_q)) {
+    if (state->keyHandler.isPressed(SDLK_q) || state->keyHandler.isPressed(SDLK_ESCAPE)) {
         state->done = true;
         return;
     }
@@ -220,5 +220,20 @@ void App::updateData(double frameTime) {
             state->pos(0) -= state->dir(0) * moveSpeed;
         if (!state->layout->map[int(tmp)][int(state->pos(1) - state->dir(1) * moveSpeed)])
             state->pos(1) -= state->dir(1) * moveSpeed;
+    }
+    if (state->keyHandler.isPressed(SDLK_a)) {
+        double tmp = state->pos(0);
+        if (!state->layout->map[int(state->pos(0) - state->dir(1) * moveSpeed)][int(state->pos(1))])
+            state->pos(0) -= state->dir(1) * moveSpeed;
+        if (!state->layout->map[int(tmp)][int(state->pos(1) + state->dir(0) * moveSpeed)])
+            state->pos(1) += state->dir(0) * moveSpeed;
+    }
+    if (state->keyHandler.isPressed(SDLK_d)) {
+        double tmp = state->pos(0);
+        if (!state->layout->map[int(state->pos(0) + state->dir(1) * moveSpeed)][int(state->pos(1))])
+            state->pos(0) += state->dir(1) * moveSpeed;
+        if (!state->layout->map[int(tmp)][int(state->pos(1) - state->dir(0) * moveSpeed)])
+            state->pos(1) -= state->dir(0) * moveSpeed;
+        
     }
 }
