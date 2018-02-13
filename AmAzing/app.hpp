@@ -11,11 +11,13 @@ public:
     bool run(std::string filename);
 private:
     State *state;
+    void makeGlyphs(std::string fontname);
     void initialize(std::string filename);
     void getEvents();
     void updateData(double frameTime);
     void drawLine(int x);
     void render();
+    void displayFPS(double fps);
 };
 
 #endif /* app_hpp */

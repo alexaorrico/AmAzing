@@ -1,5 +1,6 @@
 #include "app.hpp"
 #include <time.h>
+#include <bitset>
 #include <iostream>
 
 #define width 1080
@@ -24,33 +25,82 @@ bool App::run(std::string filename) {
         newTime = clock();
         double frameTime = ((double(newTime - oldTime)) / CLOCKS_PER_SEC);
         oldTime = newTime;
-        movingAverage = (movingAverage * 7.0 / 8.0) + (frameTime / 8.0);
-        frameTime = movingAverage;
+        movingAverage = (movingAverage * 19.0 / 20.0) + (frameTime / 20.0);
+        displayFPS(1/movingAverage);
+        SDL_RenderPresent(state->renderer);
         getEvents();
-        updateData(frameTime);
+        updateData(movingAverage);
     }
     return (true);
+}
+
+void App::makeGlyphs(std::string fontname) {
+    if (TTF_Init()) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize true type font system: %s", TTF_GetError());
+        throw std::runtime_error("TTF_Init failed");
+    }
+    TTF_Font *font = TTF_OpenFont(fontname.c_str(), 24);
+    if (!font)
+        throw std::runtime_error("TTF_OpenFont failed");
+    SDL_Color fg = {0,0,0,0xff};
+    SDL_Surface *textSurf = TTF_RenderText_Blended(font, "FPS: ", fg);
+    if (!textSurf)
+        throw std::bad_alloc();
+    SDL_Texture *fpsTex = SDL_CreateTextureFromSurface(state->renderer, textSurf);
+    if (!fpsTex)
+        throw std::bad_alloc();
+    state->fpsTex = fpsTex;
+    SDL_FreeSurface(textSurf);
+    for (char c : std::string(".0123456789")) {
+        SDL_Surface *glyphSurf = TTF_RenderGlyph_Blended(font, c, fg);
+        if (!glyphSurf)
+            throw std::bad_alloc();
+        SDL_Texture *glyphTex = SDL_CreateTextureFromSurface(state->renderer, glyphSurf);
+        SDL_FreeSurface(glyphSurf);
+        if (!glyphTex)
+            throw std::bad_alloc();
+        state->fontCache[c] = glyphTex;
+    }
+}
+
+void App::displayFPS(double fps) {
+    int w, h;
+    SDL_QueryTexture(state->fpsTex, NULL, NULL, &w, &h);
+    auto fpsString = std::to_string(fps);
+    SDL_Rect destR = {0, 0, w, h};
+    SDL_RenderCopy(state->renderer, state->fpsTex, NULL, &destR);
+    for (char c : fpsString) {
+        try {
+            SDL_Texture *tex = state->fontCache.at(c);
+            destR.x += w;
+            SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+            destR.w = w;
+            SDL_RenderCopy(state->renderer, tex, NULL, &destR);
+        } catch (std::out_of_range) {
+            continue;
+        }
+    }
+    //SDL_RenderPresent(state->renderer);
 }
 
 void App::initialize(std::string filename) {
     state->layout = new Layout(filename, std::ref(state->pos));
     state->dir << 0, 1;
     state->viewPlane<< 2.0/3, 0;
-//    enum {north, east, south, west};
     
     if (SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("SDL_Init failed");
     }
     if (!(state->window = SDL_CreateWindow("AmAzing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0))) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s", SDL_GetError());
-        exit(EXIT_FAILURE);
+        throw std::bad_alloc();
     }
     if (!(state->renderer = SDL_CreateRenderer(state->window, -1, SDL_RENDERER_ACCELERATED))) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s", SDL_GetError());
-        SDL_DestroyWindow(state->window);
-        exit(EXIT_FAILURE);
+        throw std::bad_alloc();
     }
+    makeGlyphs("Courier New.ttf");
 }
 
 void App::drawLine(int x) {
@@ -114,7 +164,7 @@ void App::render() {
     for (int x = 0; x < width; x++) {
         drawLine(x);
     }
-    SDL_RenderPresent(state->renderer);
+    //SDL_RenderPresent(state->renderer);
 }
 
 void App::getEvents() {
