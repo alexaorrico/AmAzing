@@ -42,6 +42,7 @@
 		FAF9B595203296FA0019E75C /* Layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Layout.cpp; sourceTree = "<group>"; };
 		FAF9B59C203298040019E75C /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
 		FAF9B59D203298040019E75C /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		FAF9FFDA2033A926006527B3 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +78,7 @@
 		FAF9B584203296C90019E75C /* AmAzing */ = {
 			isa = PBXGroup;
 			children = (
+				FAF9FFDA2033A926006527B3 /* images */,
 				FAF9B58D203296F90019E75C /* app.cpp */,
 				FAF9B591203296F90019E75C /* app.hpp */,
 				FAF9B593203296F90019E75C /* keyHandler.cpp */,

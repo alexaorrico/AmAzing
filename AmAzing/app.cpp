@@ -36,7 +36,6 @@ void App::initialize(std::string filename) {
     state->layout = new Layout(filename, std::ref(state->pos));
     state->dir << 0, 1;
     state->viewPlane<< 2.0/3, 0;
-//    enum {north, east, south, west};
     
     if (SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
