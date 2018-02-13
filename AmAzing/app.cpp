@@ -21,7 +21,7 @@ bool App::run(std::string filename) {
     double movingAverage = 0.015;
     oldTime = clock();
     while(!state->done){
-        render();
+        render3d();
         newTime = clock();
         double frameTime = ((double(newTime - oldTime)) / CLOCKS_PER_SEC);
         oldTime = newTime;
@@ -158,7 +158,7 @@ void App::drawLine(int x) {
     SDL_RenderDrawLine(state->renderer, x, drawStart, x, drawEnd);
 }
 
-void App::render() {
+void App::render3d() {
     SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(state->renderer);
     for (int x = 0; x < width; x++) {

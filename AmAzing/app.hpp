@@ -16,7 +16,7 @@ private:
     void getEvents();
     void updateData(double frameTime);
     void drawLine(int x);
-    void render();
+    void render3d();
     void displayFPS(double fps);
 };
 
