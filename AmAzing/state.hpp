@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <Dense>
 #include <SDL2/SDL.h>
+#include <SDL2_ttf/SDL_ttf.h>
 #include <vector>
+#include <unordered_map>
 #include "keyHandler.hpp"
 #include "Layout.hpp"
 
@@ -22,6 +24,9 @@ public:
     Vector2d viewPlane;
     SDL_Renderer *renderer = nullptr;
     SDL_Window *window = nullptr;
+    TTF_Font *font = nullptr;
+    SDL_Texture *fpsTex = nullptr;
+    std::unordered_map<u_char, SDL_Texture *> fontCache;
     KeyHandler keyHandler;
     Layout *layout = nullptr;
     static State *getInstance();
