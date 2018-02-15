@@ -219,13 +219,8 @@ void App::drawLine(int x) {
 }
 
 void App::render3d() {
-    if (sky) {
-        SDL_RenderCopy(state->renderer, sky, nullptr, nullptr);
-    }
-    else {
-        SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(state->renderer);
-    }
+    SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderClear(state->renderer);
     int w, h;
     SDL_GetWindowSize(state->window, &w, &h);
     SDL_LockSurface(buffer);
