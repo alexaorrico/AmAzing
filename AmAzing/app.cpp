@@ -93,7 +93,7 @@ void App::displayFPS(double fps) {
 void App::initialize(std::string filename) {
     state->layout = new Layout(filename, std::ref(state->pos));
     state->dir << 0, 1;
-    state->viewPlane<< 2.0/3, 0;
+    state->viewPlane << 2.0/3, 0;
     
     if (SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
@@ -182,7 +182,7 @@ void App::drawLine(int x) {
         sideDist(1) = (double(mapPos(1)) + 1.0 - state->pos(1)) * dDist(1);
         stepDir(1) = 1;
     }
-    double realdist;
+
     while (!hit) {
         std::ptrdiff_t i;
         sideDist.minCoeff(&i);
@@ -190,7 +190,7 @@ void App::drawLine(int x) {
         sideDist(i) += dDist(i);
         mapPos(i) += stepDir(i);
         
-        if (state->layout->map[mapPos(0)][mapPos(1)]) {realdist = sideDist(i); hit = true;}
+        if (state->layout->map[mapPos(0)][mapPos(1)]) hit = true;
     }
     double perpWallDist;
     if (side == 0)
@@ -209,8 +209,6 @@ void App::drawLine(int x) {
     if (side == 1)
         color = 0x4D;
     drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray, mapPos);
-//    SDL_SetRenderDrawColor(state->renderer, color, color, color, 0xFF);
-//    SDL_RenderDrawLine(state->renderer, x, drawStart, x, drawEnd);
 }
 
 void App::render3d() {
@@ -218,9 +216,14 @@ void App::render3d() {
     SDL_RenderClear(state->renderer);
     int w, h;
     SDL_GetWindowSize(state->window, &w, &h);
+    SDL_LockSurface(buffer);
+    memset(buffer->pixels, 0xFF , buffer->h * buffer->pitch);
+    SDL_UnlockSurface(buffer);
     for (int x = 0; x < w; x++) {
         drawLine(x);
     }
+    SDL_UpdateTexture(buffTex, nullptr, buffer->pixels, buffer->pitch);
+    SDL_RenderCopy(state->renderer, buffTex, nullptr, nullptr);
 }
 
 void App::render2d() {
