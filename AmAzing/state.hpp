@@ -1,11 +1,9 @@
 #ifndef state_hpp
 #define state_hpp
 
-#include <stdio.h>
-#include <Dense>
 #include <SDL2/SDL.h>
 #include <SDL2_ttf/SDL_ttf.h>
-#include <SDL2_image/SDL_image.h>
+#include <Dense>
 #include <vector>
 #include <unordered_map>
 #include "keyHandler.hpp"

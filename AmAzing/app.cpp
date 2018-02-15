@@ -1,7 +1,5 @@
 #include "app.hpp"
-#include <time.h>
-#include <bitset>
-#include <iostream>
+
 
 #define width 1080
 #define height 640
@@ -16,7 +14,10 @@ App::~App() {
         SDL_FreeSurface(buffer);
     if (buffTex)
         SDL_DestroyTexture(buffTex);
+    std::for_each(textures.begin(), textures.end(), [] (SDL_Surface *s) {if (s) SDL_FreeSurface(s);});
     SDL_Quit();
+    TTF_Quit();
+    IMG_Quit();
 }
 
 bool App::run(std::string filename) {
@@ -149,8 +150,6 @@ void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int 
         SDL_LockSurface(buffer);
         ((uint32_t *)buffer->pixels)[y * buffer->w + x] = color;
         SDL_UnlockSurface(buffer);
-//        SDL_SetRenderDrawColor(state->renderer, color >> 16 & 0xff, color >> 8 & 0xff, color & 0xff, color >> 24 & 0xff);
-//        SDL_RenderDrawPoint(state->renderer, x, y + drawstart);
     }
 }
 
