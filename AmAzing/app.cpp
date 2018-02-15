@@ -12,6 +12,10 @@ App::App() {
 
 App::~App() {
     delete state;
+    if (buffer)
+        SDL_FreeSurface(buffer);
+    if (buffTex)
+        SDL_DestroyTexture(buffTex);
     SDL_Quit();
 }
 
@@ -26,6 +30,8 @@ bool App::run(std::string filename) {
         double frameTime = ((double(newTime - oldTime)) / CLOCKS_PER_SEC);
         oldTime = newTime;
         movingAverage = (movingAverage * 19.0 / 20.0) + (frameTime / 20.0);
+        SDL_UpdateTexture(buffTex, nullptr, buffer->pixels, buffer->pitch);
+        SDL_RenderCopy(state->renderer, buffTex, nullptr, nullptr);
         displayFPS(1/movingAverage);
         SDL_RenderPresent(state->renderer);
         getEvents();
@@ -80,7 +86,6 @@ void App::displayFPS(double fps) {
             continue;
         }
     }
-    //SDL_RenderPresent(state->renderer);
 }
 
 void App::initialize(std::string filename) {
@@ -101,6 +106,50 @@ void App::initialize(std::string filename) {
         throw std::bad_alloc();
     }
     makeGlyphs("Courier New.ttf");
+    buffer = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_BGRA32);
+    if (!buffer) {
+        throw std::bad_alloc();
+    }
+    
+    buffTex = SDL_CreateTexture(state->renderer, buffer->format->format, SDL_TEXTUREACCESS_STREAMING, width, height);
+    if (!buffTex) {
+        throw std::bad_alloc();
+    }
+    IMG_Init(IMG_INIT_JPG);
+    image = IMG_Load("images/lava.jpg");
+    
+//    for(int x = 0; x < 64; x++) {
+//        for(int y = 0; y < 64; y++) {
+//            theTexture[y][x] = 65536 * 254 * (x != y && x != 64 - y) * (x != 0 && x != 63) * (y != 0 && y != 63);
+//        }
+//    }
+}
+
+void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray) {
+    //calculate value of wallX
+    double wallX; //where exactly the wall was hit
+    if (side == 1) wallX = state->pos(0) + perpWallDist * ray(0);
+    else           wallX = state->pos(1) + perpWallDist * ray(1);
+    wallX -= floor(wallX);
+
+    //x coordinate on the texture
+    int texX = floor(wallX * 256);
+    if(side == 0 && ray(0) > 0) texX = 64 - texX - 1;
+    if(side == 1 && ray(1) < 0) texX = 64 - texX - 1;
+
+    for(int y = drawstart; y < drawend; y++)
+    {
+        int d = y * 256 + (lineheight - height) * 128;
+        int texY = ((d * 256) / lineheight) / 256;
+        uint32_t color = ((uint32_t *)image->pixels)[texY * 256 + texX];
+        //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
+        if(side == 1) color = (color >> 1) & 0x7f7f7f;
+        SDL_LockSurface(buffer);
+        ((uint32_t *)buffer->pixels)[y * buffer->w + x] = color;
+        SDL_UnlockSurface(buffer);
+//        SDL_SetRenderDrawColor(state->renderer, color >> 16 & 0xff, color >> 8 & 0xff, color & 0xff, color >> 24 & 0xff);
+//        SDL_RenderDrawPoint(state->renderer, x, y + drawstart);
+    }
 }
 
 void App::drawLine(int x) {
@@ -128,6 +177,7 @@ void App::drawLine(int x) {
         sideDist(1) = (double(mapPos(1)) + 1.0 - state->pos(1)) * dDist(1);
         stepDir(1) = 1;
     }
+    double realdist;
     while (!hit) {
         std::ptrdiff_t i;
         sideDist.minCoeff(&i);
@@ -135,16 +185,15 @@ void App::drawLine(int x) {
         sideDist(i) += dDist(i);
         mapPos(i) += stepDir(i);
         
-        if (state->layout->map[mapPos(0)][mapPos(1)])
-            hit = true;
+        if (state->layout->map[mapPos(0)][mapPos(1)]) {realdist = sideDist(i); hit = true;}
     }
     double perpWallDist;
     if (side == 0)
-        perpWallDist = (double(mapPos(0)) - state->pos(0) + ((1.0 - double(stepDir(0))) / 2.0)) / ray(0);
+        perpWallDist = (mapPos(0) + ((1.0 - stepDir(0)) / 2.0) - state->pos(0)) / ray(0);
     else
-        perpWallDist = (double(mapPos(1)) - state->pos(1) + ((1.0 - double(stepDir(1))) / 2.0)) / ray(1);
+        perpWallDist = (mapPos(1) + ((1.0 - stepDir(1)) / 2.0) - state->pos(1)) / ray(1);
     
-    int lineHeight = (int)(height / perpWallDist);
+    int lineHeight = floor(height / perpWallDist);
     
     int drawStart = (height - lineHeight) / 2;
     if (drawStart < 0) drawStart = 0;
@@ -154,17 +203,20 @@ void App::drawLine(int x) {
     int color = 0x8F;
     if (side == 1)
         color = 0x4D;
-    SDL_SetRenderDrawColor(state->renderer, color, color, color, 0xFF);
-    SDL_RenderDrawLine(state->renderer, x, drawStart, x, drawEnd);
+    drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray);
+//    SDL_SetRenderDrawColor(state->renderer, color, color, color, 0xFF);
+//    SDL_RenderDrawLine(state->renderer, x, drawStart, x, drawEnd);
 }
 
 void App::render3d() {
     SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(state->renderer);
+    SDL_LockSurface(buffer);
+    memset(buffer->pixels, 0xFF, buffer->h * buffer->pitch);
+    SDL_UnlockSurface(buffer);
     for (int x = 0; x < width; x++) {
         drawLine(x);
     }
-    //SDL_RenderPresent(state->renderer);
 }
 
 void App::getEvents() {
