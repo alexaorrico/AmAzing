@@ -22,11 +22,14 @@ bool App::run(std::string filename) {
     oldTime = clock();
     while(!state->done){
         render3d();
+        if (state->showMap)
+            render2d();
         newTime = clock();
         double frameTime = ((double(newTime - oldTime)) / CLOCKS_PER_SEC);
         oldTime = newTime;
         movingAverage = (movingAverage * 19.0 / 20.0) + (frameTime / 20.0);
-        displayFPS(1/movingAverage);
+        if (state->showFPS)
+            displayFPS(1/movingAverage);
         SDL_RenderPresent(state->renderer);
         getEvents();
         updateData(movingAverage);
@@ -92,7 +95,7 @@ void App::initialize(std::string filename) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
         throw std::runtime_error("SDL_Init failed");
     }
-    if (!(state->window = SDL_CreateWindow("AmAzing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0))) {
+    if (!(state->window = SDL_CreateWindow("AmAzing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_RESIZABLE))) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s", SDL_GetError());
         throw std::bad_alloc();
     }
@@ -104,7 +107,9 @@ void App::initialize(std::string filename) {
 }
 
 void App::drawLine(int x) {
-    double t = 2.0 * double(x) / double(width) - 1.0;
+    int w, h;
+    SDL_GetWindowSize(state->window, &w, &h);
+    double t = 2.0 * double(x) / double(w) - 1.0;
     Vector2d ray = state->dir + state->viewPlane * t;
     Vector2i mapPos(state->pos(0), state->pos(1));
     Vector2d dDist = ray.cwiseAbs().cwiseInverse();
@@ -144,12 +149,12 @@ void App::drawLine(int x) {
     else
         perpWallDist = (double(mapPos(1)) - state->pos(1) + ((1.0 - double(stepDir(1))) / 2.0)) / ray(1);
     
-    int lineHeight = (int)(height / perpWallDist);
+    int lineHeight = (int)(h / perpWallDist);
     
-    int drawStart = (height - lineHeight) / 2;
+    int drawStart = (h - lineHeight) / 2;
     if (drawStart < 0) drawStart = 0;
-    int drawEnd = (lineHeight + height) / 2;
-    if (drawEnd >= height) drawEnd = height- 1;
+    int drawEnd = (lineHeight + h) / 2;
+    if (drawEnd >= h) drawEnd = h- 1;
     
     int color = 0x8F;
     if (side == 1)
@@ -161,10 +166,42 @@ void App::drawLine(int x) {
 void App::render3d() {
     SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(state->renderer);
-    for (int x = 0; x < width; x++) {
+    int w, h;
+    SDL_GetWindowSize(state->window, &w, &h);
+    for (int x = 0; x < w; x++) {
         drawLine(x);
     }
-    //SDL_RenderPresent(state->renderer);
+}
+
+void App::render2d() {
+    int w, h;
+    SDL_GetWindowSize(state->window, &w, &h);
+    float vp_scale = (float(w) * 0.25 /state->layout->columns <= float(h)* 0.25 /state->layout->rows) ? float(w)* 0.25 /state->layout->columns : float(h)* 0.25 /state->layout->rows;
+    SDL_Rect viewport;
+    viewport.h = vp_scale * state->layout->rows;
+    viewport.w = vp_scale * state->layout->columns;
+    viewport.x = w - viewport.w;
+    viewport.y = 0;
+    SDL_SetRenderDrawColor(state->renderer, 0x4B, 0x4B, 0x4B, 0x00);
+    SDL_RenderSetViewport(state->renderer, NULL);
+    SDL_RenderSetScale(state->renderer, 1, 1);
+    SDL_RenderFillRect(state->renderer, &viewport);
+    SDL_RenderSetViewport(state->renderer, &viewport);
+    SDL_RenderSetScale(state->renderer, vp_scale, vp_scale);
+    SDL_SetRenderDrawColor(state->renderer, 0x8F, 0x8F, 0x8F, 0x00);
+    for (uint32_t i = 0; i < state->layout->rows; i++) {
+        for (uint32_t j = 0; j < state->layout->columns; j++) {
+            if (state->layout->map[i][j] == 0) {
+                SDL_Rect block = {int(j), int(i), 1, 1};
+                SDL_RenderFillRect(state->renderer, &block);
+            }
+        }
+    }
+    SDL_RenderSetScale(state->renderer, vp_scale / 4, vp_scale / 4);
+    SDL_SetRenderDrawColor(state->renderer, 0xFF, 0x00, 0x00, 0x00);
+    SDL_RenderDrawPoint(state->renderer, int(state->pos(1) * 4), int(state->pos(0) * 4));
+    SDL_RenderSetViewport(state->renderer, NULL);
+    SDL_RenderSetScale(state->renderer, 1, 1);
 }
 
 void App::getEvents() {
@@ -236,4 +273,6 @@ void App::updateData(double frameTime) {
             state->pos(1) -= state->dir(0) * moveSpeed;
         
     }
+    state->showFPS = state->keyHandler.isPressed(SDLK_f);
+    state->showMap = state->keyHandler.isPressed(SDLK_m);
 }

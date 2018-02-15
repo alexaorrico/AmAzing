@@ -19,6 +19,8 @@ private:
 public:
     ~State();
     bool done = false;
+    bool showFPS = false;
+    bool showMap = false;
     Vector2d pos;
     Vector2d dir;
     Vector2d viewPlane;
