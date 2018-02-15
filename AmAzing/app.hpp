@@ -1,7 +1,8 @@
 #ifndef app_hpp
 #define app_hpp
 
-#include <stdio.h>
+#include <SDL2_image/SDL_image.h>
+#include <time.h>
 #include "state.hpp"
 
 class App {
@@ -11,6 +12,10 @@ public:
     bool run(std::string filename);
 private:
     State *state;
+    SDL_Surface *buffer = nullptr;
+    SDL_Texture *buffTex = nullptr;
+    std::vector<SDL_Surface *> textures = std::vector<SDL_Surface *> (9, nullptr);
+    uint32_t theTexture[64][64];
     void makeGlyphs(std::string fontname);
     void initialize(std::string filename);
     void getEvents();
@@ -18,6 +23,7 @@ private:
     void drawLine(int x);
     void render2d();
     void render3d();
+    void drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos);
     void displayFPS(double fps);
 };
 
