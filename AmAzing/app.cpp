@@ -117,7 +117,8 @@ void App::initialize(std::string filename) {
         throw std::bad_alloc();
     }
     
-    IMG_Init(IMG_INIT_JPG);
+    if (IMG_Init(IMG_INIT_JPG) != IMG_INIT_JPG)
+        throw std::runtime_error("Texture initialization failed");
     textures[1] = IMG_Load("images/wood.jpg");
     textures[2] = IMG_Load("images/metal.jpg");
     textures[3] = IMG_Load("images/curtain.jpg");
