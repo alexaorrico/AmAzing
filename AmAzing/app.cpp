@@ -115,17 +115,19 @@ void App::initialize(std::string filename) {
     if (!buffTex) {
         throw std::bad_alloc();
     }
-    IMG_Init(IMG_INIT_JPG);
-    image = IMG_Load("images/lava.jpg");
     
-//    for(int x = 0; x < 64; x++) {
-//        for(int y = 0; y < 64; y++) {
-//            theTexture[y][x] = 65536 * 254 * (x != y && x != 64 - y) * (x != 0 && x != 63) * (y != 0 && y != 63);
-//        }
-//    }
+    IMG_Init(IMG_INIT_JPG);
+    textures[1] = IMG_Load("images/wood.jpg");
+    textures[2] = IMG_Load("images/metal.jpg");
+    textures[3] = IMG_Load("images/curtain.jpg");
+    textures[4] = IMG_Load("images/stone_moss.jpg");
+    textures[5] = IMG_Load("images/bark.jpg");
+    textures[6] = IMG_Load("images/privat_parkering.jpg");
+    textures[7] = IMG_Load("images/grass.jpg");
+    textures[8] = IMG_Load("images/lava.jpg");
 }
 
-void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray) {
+void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos) {
     //calculate value of wallX
     double wallX; //where exactly the wall was hit
     if (side == 1) wallX = state->pos(0) + perpWallDist * ray(0);
@@ -141,7 +143,7 @@ void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int 
     {
         int d = y * 256 + (lineheight - height) * 128;
         int texY = ((d * 256) / lineheight) / 256;
-        uint32_t color = ((uint32_t *)image->pixels)[texY * 256 + texX];
+        uint32_t color = ((uint32_t *)(textures[state->layout->map[mapPos(0)][mapPos(1)]])->pixels)[texY * 256 + texX];
         //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
         if(side == 1) color = (color >> 1) & 0x7f7f7f;
         SDL_LockSurface(buffer);
@@ -203,7 +205,7 @@ void App::drawLine(int x) {
     int color = 0x8F;
     if (side == 1)
         color = 0x4D;
-    drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray);
+    drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray, mapPos);
 //    SDL_SetRenderDrawColor(state->renderer, color, color, color, 0xFF);
 //    SDL_RenderDrawLine(state->renderer, x, drawStart, x, drawEnd);
 }
