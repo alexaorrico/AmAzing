@@ -1,7 +1,5 @@
 #include "app.hpp"
-#include <time.h>
-#include <bitset>
-#include <iostream>
+
 
 #define width 1080
 #define height 640
@@ -16,7 +14,12 @@ App::~App() {
         SDL_FreeSurface(buffer);
     if (buffTex)
         SDL_DestroyTexture(buffTex);
+    std::for_each(textures.begin(), textures.end(), [] (SDL_Surface *s) {if (s) SDL_FreeSurface(s);});
+    if (sky)
+        SDL_DestroyTexture(sky);
     SDL_Quit();
+    TTF_Quit();
+    IMG_Quit();
 }
 
 bool App::run(std::string filename) {
@@ -92,7 +95,7 @@ void App::displayFPS(double fps) {
 void App::initialize(std::string filename) {
     state->layout = new Layout(filename, std::ref(state->pos));
     state->dir << 0, 1;
-    state->viewPlane<< 2.0/3, 0;
+    state->viewPlane << 2.0/3, 0;
     
     if (SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
@@ -116,17 +119,26 @@ void App::initialize(std::string filename) {
     if (!buffTex) {
         throw std::bad_alloc();
     }
-    IMG_Init(IMG_INIT_JPG);
-    image = IMG_Load("images/lava.jpg");
     
-//    for(int x = 0; x < 64; x++) {
-//        for(int y = 0; y < 64; y++) {
-//            theTexture[y][x] = 65536 * 254 * (x != y && x != 64 - y) * (x != 0 && x != 63) * (y != 0 && y != 63);
-//        }
-//    }
+    if (IMG_Init(IMG_INIT_JPG) != IMG_INIT_JPG)
+        throw std::runtime_error("Texture initialization failed");
+    textures[1] = IMG_Load("images/wood.jpg");
+    textures[2] = IMG_Load("images/metal.jpg");
+    textures[3] = IMG_Load("images/curtain.jpg");
+    textures[4] = IMG_Load("images/stone_moss.jpg");
+    textures[5] = IMG_Load("images/bark.jpg");
+    textures[6] = IMG_Load("images/privat_parkering.jpg");
+    textures[7] = IMG_Load("images/grass.jpg");
+    textures[8] = IMG_Load("images/lava.jpg");
+    
+    SDL_Surface *skySurf = IMG_Load("images/Vue1.jpg");
+    if (!skySurf)
+        throw std::bad_alloc();
+    sky = SDL_CreateTextureFromSurface(state->renderer, skySurf);
+    SDL_FreeSurface(skySurf);
 }
 
-void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray) {
+void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos) {
     //calculate value of wallX
     double wallX; //where exactly the wall was hit
     if (side == 1) wallX = state->pos(0) + perpWallDist * ray(0);
@@ -142,14 +154,12 @@ void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int 
     {
         int d = y * 256 + (lineheight - height) * 128;
         int texY = ((d * 256) / lineheight) / 256;
-        uint32_t color = ((uint32_t *)image->pixels)[texY * 256 + texX];
+        uint32_t color = ((uint32_t *)(textures[state->layout->map[mapPos(0)][mapPos(1)]])->pixels)[texY * 256 + texX];
         //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
         if(side == 1) color = (color >> 1) & 0x7f7f7f;
         SDL_LockSurface(buffer);
         ((uint32_t *)buffer->pixels)[y * buffer->w + x] = color;
         SDL_UnlockSurface(buffer);
-//        SDL_SetRenderDrawColor(state->renderer, color >> 16 & 0xff, color >> 8 & 0xff, color & 0xff, color >> 24 & 0xff);
-//        SDL_RenderDrawPoint(state->renderer, x, y + drawstart);
     }
 }
 
@@ -180,7 +190,7 @@ void App::drawLine(int x) {
         sideDist(1) = (double(mapPos(1)) + 1.0 - state->pos(1)) * dDist(1);
         stepDir(1) = 1;
     }
-    double realdist;
+
     while (!hit) {
         std::ptrdiff_t i;
         sideDist.minCoeff(&i);
@@ -188,7 +198,7 @@ void App::drawLine(int x) {
         sideDist(i) += dDist(i);
         mapPos(i) += stepDir(i);
         
-        if (state->layout->map[mapPos(0)][mapPos(1)]) {realdist = sideDist(i); hit = true;}
+        if (state->layout->map[mapPos(0)][mapPos(1)]) hit = true;
     }
     double perpWallDist;
     if (side == 0)
@@ -206,9 +216,7 @@ void App::drawLine(int x) {
     int color = 0x8F;
     if (side == 1)
         color = 0x4D;
-    drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray);
-//    SDL_SetRenderDrawColor(state->renderer, color, color, color, 0xFF);
-//    SDL_RenderDrawLine(state->renderer, x, drawStart, x, drawEnd);
+    drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray, mapPos);
 }
 
 void App::render3d() {
@@ -216,9 +224,14 @@ void App::render3d() {
     SDL_RenderClear(state->renderer);
     int w, h;
     SDL_GetWindowSize(state->window, &w, &h);
+    SDL_LockSurface(buffer);
+    memset(buffer->pixels, 0xFF , buffer->h * buffer->pitch);
+    SDL_UnlockSurface(buffer);
     for (int x = 0; x < w; x++) {
         drawLine(x);
     }
+    SDL_UpdateTexture(buffTex, nullptr, buffer->pixels, buffer->pitch);
+    SDL_RenderCopy(state->renderer, buffTex, nullptr, nullptr);
 }
 
 void App::render2d() {
