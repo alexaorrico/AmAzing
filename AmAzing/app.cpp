@@ -1,6 +1,5 @@
 #include "app.hpp"
 
-
 #define width 1080
 #define height 640
 
@@ -147,8 +146,8 @@ void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int 
 
     //x coordinate on the texture
     int texX = floor(wallX * 256);
-    if(side == 0 && ray(0) > 0) texX = 64 - texX - 1;
-    if(side == 1 && ray(1) < 0) texX = 64 - texX - 1;
+    if(side == 0 && ray(0) > 0) texX = 256 - texX - 1;
+    if(side == 1 && ray(1) < 0) texX = 256 - texX - 1;
 
     for(int y = drawstart; y < drawend; y++)
     {
