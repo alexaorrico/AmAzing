@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		60FB27E72033B9A600469F27 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60FB27E62033B9A600469F27 /* SDL2_image.framework */; };
 		FAF9B596203296FA0019E75C /* state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B58C203296F90019E75C /* state.cpp */; };
 		FAF9B597203296FA0019E75C /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B58D203296F90019E75C /* app.cpp */; };
 		FAF9B598203296FA0019E75C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B58E203296F90019E75C /* main.cpp */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		60FB27E52032C82600469F27 /* Courier New.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier New.ttf"; sourceTree = "<group>"; };
+		60FB27E62033B9A600469F27 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		FAF9B582203296C90019E75C /* AmAzing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AmAzing; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAF9B58C203296F90019E75C /* state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state.cpp; sourceTree = "<group>"; };
 		FAF9B58D203296F90019E75C /* app.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app.cpp; sourceTree = "<group>"; };
@@ -51,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60FB27E72033B9A600469F27 /* SDL2_image.framework in Frameworks */,
 				FAF9B59E203298040019E75C /* SDL2_ttf.framework in Frameworks */,
 				FAF9B59F203298040019E75C /* SDL2.framework in Frameworks */,
 			);
@@ -98,6 +101,7 @@
 		FAF9B59B203298030019E75C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				60FB27E62033B9A600469F27 /* SDL2_image.framework */,
 				FAF9B59C203298040019E75C /* SDL2_ttf.framework */,
 				FAF9B59D203298040019E75C /* SDL2.framework */,
 			);
