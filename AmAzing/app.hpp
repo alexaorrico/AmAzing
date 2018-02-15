@@ -14,6 +14,7 @@ private:
     State *state;
     SDL_Surface *buffer = nullptr;
     SDL_Texture *buffTex = nullptr;
+    SDL_Texture *sky = nullptr;
     std::vector<SDL_Surface *> textures = std::vector<SDL_Surface *> (9, nullptr);
     uint32_t theTexture[64][64];
     void makeGlyphs(std::string fontname);

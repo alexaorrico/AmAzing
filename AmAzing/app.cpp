@@ -15,6 +15,8 @@ App::~App() {
     if (buffTex)
         SDL_DestroyTexture(buffTex);
     std::for_each(textures.begin(), textures.end(), [] (SDL_Surface *s) {if (s) SDL_FreeSurface(s);});
+    if (sky)
+        SDL_DestroyTexture(sky);
     SDL_Quit();
     TTF_Quit();
     IMG_Quit();
@@ -128,6 +130,12 @@ void App::initialize(std::string filename) {
     textures[6] = IMG_Load("images/privat_parkering.jpg");
     textures[7] = IMG_Load("images/grass.jpg");
     textures[8] = IMG_Load("images/lava.jpg");
+    
+    SDL_Surface *skySurf = IMG_Load("images/Vue1.jpg");
+    if (!skySurf)
+        throw std::bad_alloc();
+    sky = SDL_CreateTextureFromSurface(state->renderer, skySurf);
+    SDL_FreeSurface(skySurf);
 }
 
 void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos) {
@@ -212,8 +220,13 @@ void App::drawLine(int x) {
 }
 
 void App::render3d() {
-    SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderClear(state->renderer);
+    if (sky) {
+        SDL_RenderCopy(state->renderer, sky, nullptr, nullptr);
+    }
+    else {
+        SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderClear(state->renderer);
+    }
     int w, h;
     SDL_GetWindowSize(state->window, &w, &h);
     SDL_LockSurface(buffer);
