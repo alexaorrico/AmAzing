@@ -58,7 +58,7 @@ void App::makeGlyphs(std::string fontname) {
     TTF_Font *font = TTF_OpenFont(fontname.c_str(), 24);
     if (!font)
         throw std::runtime_error("TTF_OpenFont failed");
-    SDL_Color fg = {0,0,0,0xff};
+    SDL_Color fg = {0xff,0xff,0xff,0xff};
     SDL_Surface *textSurf = TTF_RenderText_Blended(font, "FPS: ", fg);
     if (!textSurf)
         throw std::bad_alloc();
