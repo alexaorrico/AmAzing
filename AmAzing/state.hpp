@@ -1,10 +1,9 @@
 #ifndef state_hpp
 #define state_hpp
 
-#include <stdio.h>
-#include <Dense>
 #include <SDL2/SDL.h>
 #include <SDL2_ttf/SDL_ttf.h>
+#include <Dense>
 #include <vector>
 #include <unordered_map>
 #include "keyHandler.hpp"
@@ -19,6 +18,8 @@ private:
 public:
     ~State();
     bool done = false;
+    bool showFPS = false;
+    bool showMap = false;
     Vector2d pos;
     Vector2d dir;
     Vector2d viewPlane;
