@@ -2,6 +2,7 @@
 #define app_hpp
 
 #include <SDL2_image/SDL_image.h>
+#include <SDL2_mixer/SDL_mixer.h>
 #include <time.h>
 #include "state.hpp"
 
@@ -15,6 +16,7 @@ private:
     SDL_Surface *buffer = nullptr;
     SDL_Texture *buffTex = nullptr;
     SDL_Texture *sky = nullptr;
+    Mix_Music *music = nullptr;
     std::vector<SDL_Surface *> textures = std::vector<SDL_Surface *> (9, nullptr);
     uint32_t theTexture[64][64];
     void makeGlyphs(std::string fontname);
