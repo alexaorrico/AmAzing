@@ -9,4 +9,4 @@ Development was performed using Xcode and compiled for macOS 10.13. While other 
 ### Installation
 Currently, the most reliable way to install AmAzing is to import the project into Xcode and compile using the Apple LLVM compiler. AmAzing makes use of C++11 features, which may not be implemented in older compilers (e.g. lambda functions).
 
-**UNDER CONSTRUCTION**
+## **UNDER CONSTRUCTION**
