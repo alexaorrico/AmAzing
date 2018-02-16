@@ -164,7 +164,7 @@ void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int 
 
     for(int y = drawstart; y < drawend; y++)
     {
-        int d = y * 256 + (lineheight - height) * 128;
+        int d = (y + (lineheight - height) / 2) * 256;
         int texY = ((d * 256) / lineheight) / 256;
         uint32_t color = ((uint32_t *)(textures[state->layout->map[mapPos(0)][mapPos(1)]])->pixels)[texY * 256 + texX];
         //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
@@ -346,6 +346,10 @@ void App::updateData(double frameTime) {
             state->pos(1) -= state->dir(0) * moveSpeed;
         
     }
+    if (state->keyHandler.isPressed(SDLK_p) && Mix_PlayingMusic())
+        Mix_PauseMusic();
+    else if (state->keyHandler.isReleased(SDLK_p) && Mix_PausedMusic())
+        Mix_ResumeMusic();
     state->showFPS = state->keyHandler.isPressed(SDLK_f);
     state->showMap = state->keyHandler.isPressed(SDLK_m);
 }
