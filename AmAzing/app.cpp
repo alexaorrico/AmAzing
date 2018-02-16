@@ -16,6 +16,9 @@ App::~App() {
     std::for_each(textures.begin(), textures.end(), [] (SDL_Surface *s) {if (s) SDL_FreeSurface(s);});
     if (sky)
         SDL_DestroyTexture(sky);
+    if (music)
+        Mix_FreeMusic(music);
+    Mix_Quit();
     SDL_Quit();
     TTF_Quit();
     IMG_Quit();
@@ -26,6 +29,7 @@ bool App::run(std::string filename) {
     clock_t newTime, oldTime;
     double movingAverage = 0.015;
     oldTime = clock();
+    Mix_FadeInMusic(music, -1, 3000);
     while(!state->done){
         render3d();
         if (state->showMap)
@@ -96,7 +100,7 @@ void App::initialize(std::string filename) {
     state->dir << 0, 1;
     state->viewPlane << 2.0/3, 0;
     
-    if (SDL_Init(SDL_INIT_VIDEO)) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
         throw std::runtime_error("SDL_Init failed");
     }
@@ -134,6 +138,9 @@ void App::initialize(std::string filename) {
     if (!skySurf)
         throw std::bad_alloc();
     sky = SDL_CreateTextureFromSurface(state->renderer, skySurf);
+    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+        throw std::bad_alloc();
+    music = Mix_LoadMUS( "audio/Game_of_Thrones.wav" );
     SDL_FreeSurface(skySurf);
 }
 
