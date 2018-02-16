@@ -144,6 +144,10 @@ void App::initialize(std::string filename) {
     sky = SDL_CreateTextureFromSurface(state->renderer, skySurf);
     SDL_SetTextureBlendMode(sky, SDL_BLENDMODE_BLEND);
     SDL_FreeSurface(skySurf);
+    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+        throw std::bad_alloc();
+    if (!(music = Mix_LoadMUS("audio/Game_of_Thrones.wav")))
+        throw std::runtime_error("Could not load music");
 }
 
 void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos) {
