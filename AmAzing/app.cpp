@@ -27,6 +27,9 @@ bool App::run(std::string filename) {
     double movingAverage = 0.015;
     oldTime = clock();
     while(!state->done){
+        if (sky) {
+            SDL_RenderCopy(state->renderer, sky, nullptr, nullptr);
+        }
         render3d();
         if (state->showMap)
             render2d();
@@ -118,6 +121,7 @@ void App::initialize(std::string filename) {
     if (!buffTex) {
         throw std::bad_alloc();
     }
+    SDL_SetTextureBlendMode(buffTex, SDL_BLENDMODE_BLEND);
     
     if (IMG_Init(IMG_INIT_JPG) != IMG_INIT_JPG)
         throw std::runtime_error("Texture initialization failed");
@@ -134,6 +138,7 @@ void App::initialize(std::string filename) {
     if (!skySurf)
         throw std::bad_alloc();
     sky = SDL_CreateTextureFromSurface(state->renderer, skySurf);
+    SDL_SetTextureBlendMode(sky, SDL_BLENDMODE_BLEND);
     SDL_FreeSurface(skySurf);
 }
 
@@ -155,7 +160,7 @@ void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int 
         int texY = ((d * 256) / lineheight) / 256;
         uint32_t color = ((uint32_t *)(textures[state->layout->map[mapPos(0)][mapPos(1)]])->pixels)[texY * 256 + texX];
         //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
-        if(side == 1) color = (color >> 1) & 0x7f7f7f;
+        if(side == 1) color = ((color >> 1) & 0x007f7f7f) + 0xff000000;
         SDL_LockSurface(buffer);
         ((uint32_t *)buffer->pixels)[y * buffer->w + x] = color;
         SDL_UnlockSurface(buffer);
@@ -219,12 +224,12 @@ void App::drawLine(int x) {
 }
 
 void App::render3d() {
-    SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderClear(state->renderer);
+//    SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+//    SDL_RenderClear(state->renderer);
     int w, h;
     SDL_GetWindowSize(state->window, &w, &h);
     SDL_LockSurface(buffer);
-    memset(buffer->pixels, 0xFF , buffer->h * buffer->pitch);
+    memset(buffer->pixels, 0x00 , buffer->h * buffer->pitch);
     SDL_UnlockSurface(buffer);
     for (int x = 0; x < w; x++) {
         drawLine(x);
