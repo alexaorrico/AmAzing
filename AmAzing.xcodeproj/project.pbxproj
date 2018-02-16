@@ -10,11 +10,11 @@
 		60FB27E72033B9A600469F27 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60FB27E62033B9A600469F27 /* SDL2_image.framework */; };
 		60FB27EA2036740A00469F27 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60FB27E82036640C00469F27 /* SDL2_mixer.framework */; };
 		60FB27EB2036772B00469F27 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF9B59D203298040019E75C /* SDL2.framework */; };
-		FAF9B596203296FA0019E75C /* state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B58C203296F90019E75C /* state.cpp */; };
-		FAF9B597203296FA0019E75C /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B58D203296F90019E75C /* app.cpp */; };
-		FAF9B598203296FA0019E75C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B58E203296F90019E75C /* main.cpp */; };
-		FAF9B599203296FA0019E75C /* keyHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B593203296F90019E75C /* keyHandler.cpp */; };
-		FAF9B59A203296FA0019E75C /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAF9B595203296FA0019E75C /* Layout.cpp */; };
+		60FB28032036A83600469F27 /* keyHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60FB27FF2036A83600469F27 /* keyHandler.cpp */; };
+		60FB28042036A83600469F27 /* state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60FB28002036A83600469F27 /* state.cpp */; };
+		60FB28052036A83600469F27 /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60FB28012036A83600469F27 /* app.cpp */; };
+		60FB28062036A83600469F27 /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60FB28022036A83600469F27 /* Layout.cpp */; };
+		60FB280D2036AFBB00469F27 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60FB280C2036AFBB00469F27 /* main.cpp */; };
 		FAF9B59E203298040019E75C /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF9B59C203298040019E75C /* SDL2_ttf.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,21 +31,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		60FB27E52032C82600469F27 /* Courier New.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier New.ttf"; sourceTree = "<group>"; };
 		60FB27E62033B9A600469F27 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		60FB27E82036640C00469F27 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
+		60FB27ED20368B2D00469F27 /* audio */ = {isa = PBXFileReference; lastKnownFileType = folder; path = audio; sourceTree = "<group>"; };
+		60FB27EE20368B2D00469F27 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
+		60FB27EF20368B2D00469F27 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
+		60FB27F020368B2D00469F27 /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = maps; sourceTree = "<group>"; };
+		60FB27FF2036A83600469F27 /* keyHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyHandler.cpp; sourceTree = "<group>"; };
+		60FB28002036A83600469F27 /* state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state.cpp; sourceTree = "<group>"; };
+		60FB28012036A83600469F27 /* app.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app.cpp; sourceTree = "<group>"; };
+		60FB28022036A83600469F27 /* Layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Layout.cpp; sourceTree = "<group>"; };
+		60FB28082036AD8400469F27 /* Layout.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Layout.hpp; path = include/Layout.hpp; sourceTree = "<group>"; };
+		60FB28092036AD8400469F27 /* keyHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = keyHandler.hpp; path = include/keyHandler.hpp; sourceTree = "<group>"; };
+		60FB280A2036AD8400469F27 /* state.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = state.hpp; path = include/state.hpp; sourceTree = "<group>"; };
+		60FB280B2036AD8400469F27 /* app.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = app.hpp; path = include/app.hpp; sourceTree = "<group>"; };
+		60FB280C2036AFBB00469F27 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FA4035D62036583E00C771B7 /* audio */ = {isa = PBXFileReference; lastKnownFileType = folder; path = audio; sourceTree = "<group>"; };
 		FAF9B582203296C90019E75C /* AmAzing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AmAzing; sourceTree = BUILT_PRODUCTS_DIR; };
-		FAF9B58C203296F90019E75C /* state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state.cpp; sourceTree = "<group>"; };
-		FAF9B58D203296F90019E75C /* app.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app.cpp; sourceTree = "<group>"; };
-		FAF9B58E203296F90019E75C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
-		FAF9B58F203296F90019E75C /* state.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = state.hpp; sourceTree = "<group>"; };
-		FAF9B590203296F90019E75C /* keyHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = keyHandler.hpp; sourceTree = "<group>"; };
-		FAF9B591203296F90019E75C /* app.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = app.hpp; sourceTree = "<group>"; };
-		FAF9B592203296F90019E75C /* test_map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test_map; sourceTree = "<group>"; };
-		FAF9B593203296F90019E75C /* keyHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyHandler.cpp; sourceTree = "<group>"; };
-		FAF9B594203296FA0019E75C /* Layout.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Layout.hpp; sourceTree = "<group>"; };
-		FAF9B595203296FA0019E75C /* Layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Layout.cpp; sourceTree = "<group>"; };
 		FAF9B59C203298040019E75C /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
 		FAF9B59D203298040019E75C /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		FAF9FFDA2033A926006527B3 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
@@ -66,6 +68,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		60FB27F52036A6F100469F27 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				60FB28012036A83600469F27 /* app.cpp */,
+				60FB27FF2036A83600469F27 /* keyHandler.cpp */,
+				60FB28022036A83600469F27 /* Layout.cpp */,
+				60FB28002036A83600469F27 /* state.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		60FB28072036AD6200469F27 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				60FB280B2036AD8400469F27 /* app.hpp */,
+				60FB28092036AD8400469F27 /* keyHandler.hpp */,
+				60FB28082036AD8400469F27 /* Layout.hpp */,
+				60FB280A2036AD8400469F27 /* state.hpp */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
 		FAF9B579203296C90019E75C = {
 			isa = PBXGroup;
 			children = (
@@ -86,19 +110,15 @@
 		FAF9B584203296C90019E75C /* AmAzing */ = {
 			isa = PBXGroup;
 			children = (
+				60FB280C2036AFBB00469F27 /* main.cpp */,
+				60FB28072036AD6200469F27 /* include */,
+				60FB27F52036A6F100469F27 /* src */,
 				FA4035D62036583E00C771B7 /* audio */,
 				FAF9FFDA2033A926006527B3 /* images */,
-				FAF9B58D203296F90019E75C /* app.cpp */,
-				60FB27E52032C82600469F27 /* Courier New.ttf */,
-				FAF9B591203296F90019E75C /* app.hpp */,
-				FAF9B593203296F90019E75C /* keyHandler.cpp */,
-				FAF9B590203296F90019E75C /* keyHandler.hpp */,
-				FAF9B595203296FA0019E75C /* Layout.cpp */,
-				FAF9B594203296FA0019E75C /* Layout.hpp */,
-				FAF9B58E203296F90019E75C /* main.cpp */,
-				FAF9B58C203296F90019E75C /* state.cpp */,
-				FAF9B58F203296F90019E75C /* state.hpp */,
-				FAF9B592203296F90019E75C /* test_map */,
+				60FB27ED20368B2D00469F27 /* audio */,
+				60FB27EE20368B2D00469F27 /* fonts */,
+				60FB27EF20368B2D00469F27 /* images */,
+				60FB27F020368B2D00469F27 /* maps */,
 			);
 			path = AmAzing;
 			sourceTree = "<group>";
@@ -171,11 +191,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAF9B597203296FA0019E75C /* app.cpp in Sources */,
-				FAF9B598203296FA0019E75C /* main.cpp in Sources */,
-				FAF9B59A203296FA0019E75C /* Layout.cpp in Sources */,
-				FAF9B599203296FA0019E75C /* keyHandler.cpp in Sources */,
-				FAF9B596203296FA0019E75C /* state.cpp in Sources */,
+				60FB28062036A83600469F27 /* Layout.cpp in Sources */,
+				60FB28052036A83600469F27 /* app.cpp in Sources */,
+				60FB28042036A83600469F27 /* state.cpp in Sources */,
+				60FB280D2036AFBB00469F27 /* main.cpp in Sources */,
+				60FB28032036A83600469F27 /* keyHandler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
