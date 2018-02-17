@@ -1,4 +1,7 @@
 #include "../include/app.hpp"
+#include <thread>
+#include <iostream>
+#include <deque>
 
 #define width 1080
 #define height 640
@@ -27,7 +30,7 @@ App::~App() {
 bool App::run(std::string filename) {
     initialize(filename);
     clock_t newTime, oldTime;
-    double movingAverage = 0.015;
+    double movingAverage = 0.03;
     oldTime = clock();
     Mix_FadeInMusic(music, -1, 3000);
     while(!state->done){
@@ -103,11 +106,12 @@ void App::initialize(std::string filename) {
     state->dir << 0, 1;
     state->viewPlane << 2.0/3, 0;
     
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
         throw std::runtime_error("SDL_Init failed");
     }
-    if (!(state->window = SDL_CreateWindow("AmAzing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_RESIZABLE))) {
+    if (!(state->window = SDL_CreateWindow("AmAzing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0))) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s", SDL_GetError());
         throw std::bad_alloc();
     }
@@ -115,28 +119,34 @@ void App::initialize(std::string filename) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s", SDL_GetError());
         throw std::bad_alloc();
     }
+    int w, h;
+    SDL_GetWindowSize(state->window, &w, &h);
     makeGlyphs("AmAzing/fonts/Courier New.ttf");
-    buffer = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_BGRA32);
+    buffer = SDL_CreateRGBSurfaceWithFormat(0, w, h, 32, SDL_PIXELFORMAT_BGRA32);
     if (!buffer) {
         throw std::bad_alloc();
     }
     
-    buffTex = SDL_CreateTexture(state->renderer, buffer->format->format, SDL_TEXTUREACCESS_STREAMING, width, height);
+    buffTex = SDL_CreateTexture(state->renderer, buffer->format->format, SDL_TEXTUREACCESS_STREAMING, w, h);
     if (!buffTex) {
         throw std::bad_alloc();
     }
     SDL_SetTextureBlendMode(buffTex, SDL_BLENDMODE_BLEND);
     
-    if (IMG_Init(IMG_INIT_JPG) != IMG_INIT_JPG)
+    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) != (IMG_INIT_JPG | IMG_INIT_PNG))
         throw std::runtime_error("Texture initialization failed");
     textures[1] = IMG_Load("AmAzing/images/wood.jpg");
     textures[2] = IMG_Load("AmAzing/images/metal.jpg");
     textures[3] = IMG_Load("AmAzing/images/curtain.jpg");
     textures[4] = IMG_Load("AmAzing/images/stone_moss.jpg");
-    textures[5] = IMG_Load("AmAzing/images/bark.jpg");
-    textures[6] = IMG_Load("AmAzing/images/privat_parkering.jpg");
-    textures[7] = IMG_Load("AmAzing/images/grass.jpg");
-    textures[8] = IMG_Load("AmAzing/images/lava.jpg");
+//    textures[5] = IMG_Load("AmAzing/images/bark.jpg");
+    textures[5] = IMG_Load("AmAzing/images/privat_parkering.jpg");
+//    textures[7] = IMG_Load("AmAzing/images/grass.jpg");
+    textures[6] = IMG_Load("AmAzing/images/lava.jpg");
+    textures[7] = IMG_Load("AmAzing/images/Guillaume.jpg");
+    textures[8] = IMG_Load("AmAzing/images/sylvain.png");
+    textures[9] = IMG_Load("AmAzing/images/ju-phisticated.png");
+
     
     SDL_Surface *skySurf = IMG_Load("AmAzing/images/Vue1.jpg");
     if (!skySurf)
@@ -150,7 +160,7 @@ void App::initialize(std::string filename) {
         throw std::runtime_error("Could not load music");
 }
 
-void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos) {
+double App::drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos) {
     //calculate value of wallX
     double wallX; //where exactly the wall was hit
     if (side == 1) wallX = state->pos(0) + perpWallDist * ray(0);
@@ -162,17 +172,21 @@ void App::drawTexture(int x, int side, int lineheight, double perpWallDist, int 
     if(side == 0 && ray(0) > 0) texX = 256 - texX - 1;
     if(side == 1 && ray(1) < 0) texX = 256 - texX - 1;
 
+    int w, h;
+    SDL_GetWindowSize(state->window, &w, &h);
     for(int y = drawstart; y < drawend; y++)
     {
-        int d = (y + (lineheight - height) / 2) * 256;
-        int texY = ((d * 256) / lineheight) / 256;
+        int d = (y + int(lineheight - h) / 2);
+        int texY = ((d * 256) / lineheight);
+        if (texY < 0) throw std::runtime_error("SOMETHING WENT WRONG!!!! AGHHH!!!");
         uint32_t color = ((uint32_t *)(textures[state->layout->map[mapPos(0)][mapPos(1)]])->pixels)[texY * 256 + texX];
         //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
-        if(side == 1) color = ((color >> 1) & 0x007f7f7f) + 0xff000000;
+        if(side == 1) color = ((color >> 1) & 0x007f7f7f) | 0xff000000;
         SDL_LockSurface(buffer);
         ((uint32_t *)buffer->pixels)[y * buffer->w + x] = color;
         SDL_UnlockSurface(buffer);
     }
+    return wallX;
 }
 
 void App::drawLine(int x) {
@@ -228,20 +242,79 @@ void App::drawLine(int x) {
     int color = 0x8F;
     if (side == 1)
         color = 0x4D;
-    drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray, mapPos);
+    
+    double wallX;
+    wallX = drawTexture(x, side, lineHeight, perpWallDist, drawStart, drawEnd, ray, mapPos);
+    
+    //FLOOR CASTING
+    double floorXWall, floorYWall; //x, y position of the floor texel at the bottom of the wall
+
+    //4 different wall directions possible
+    if(side == 1 && ray(1) > 0) // E
+    {
+        floorXWall = mapPos(1);
+        floorYWall = mapPos(0) + wallX;
+    }
+    else if(side == 1 && ray(1) < 0) // W
+    {
+        floorXWall = mapPos(1) + 1;
+        floorYWall = mapPos(0) + wallX;
+    }
+    else if(side == 0 && ray(0) > 0) // S
+    {
+        floorXWall = mapPos(1) + wallX;
+        floorYWall = mapPos(0);
+    }
+    else // N
+    {
+        floorXWall = mapPos(1) + wallX;
+        floorYWall = mapPos(0) + 1;
+    }
+
+    double distWall, currentDist;
+    distWall = perpWallDist;
+
+    if (drawEnd < 0) drawEnd = h; //becomes < 0 when the integer overflows
+
+    //draw the floor from drawEnd to the bottom of the screen
+    for (int y = drawEnd + 1; y < h; y++)
+    {
+        currentDist = h / (2.0 * y - h);
+
+        double weight = currentDist / distWall;
+
+        double currentFloorX = weight * floorXWall + (1.0 - weight) * state->pos(1);
+        double currentFloorY = weight * floorYWall + (1.0 - weight) * state->pos(0);
+
+        int floorTexX, floorTexY;
+        floorTexX = int(currentFloorX * 256) % 256;
+        floorTexY = int(currentFloorY * 256) % 256;
+
+        SDL_LockSurface(buffer);
+        ((uint32_t *)buffer->pixels)[y * buffer->w + x] =
+            ((((uint32_t *)textures[4]->pixels)[floorTexX * textures[4]->w + floorTexY] >> 1) & 0x007f7f7f) | 0xff000000;
+        SDL_UnlockSurface(buffer);
+    }
 }
 
 void App::render3d() {
-//    SDL_SetRenderDrawColor(state->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-//    SDL_RenderClear(state->renderer);
     int w, h;
     SDL_GetWindowSize(state->window, &w, &h);
     SDL_LockSurface(buffer);
     memset(buffer->pixels, 0x00 , buffer->h * buffer->pitch);
     SDL_UnlockSurface(buffer);
+//    std::deque<std::thread> threads;
+//    auto hc = std::thread::hardware_concurrency();
     for (int x = 0; x < w; x++) {
+//        threads.push_back(std::thread(&App::drawLine, this, x));
+//    }
+//    for (int x = hc; x < w; x++) {
+//        threads.front().join();
+//        threads.pop_front();
+//        threads.push_back(std::thread(&App::drawLine, this, x));
         drawLine(x);
     }
+//    std::for_each(threads.begin(), threads.end(), [] (std::thread& t) {t.join();});
     SDL_UpdateTexture(buffTex, nullptr, buffer->pixels, buffer->pitch);
     SDL_RenderCopy(state->renderer, buffTex, nullptr, nullptr);
 }
@@ -270,9 +343,9 @@ void App::render2d() {
             }
         }
     }
-    SDL_RenderSetScale(state->renderer, vp_scale / 4, vp_scale / 4);
+    SDL_RenderSetScale(state->renderer, vp_scale / 2, vp_scale / 2);
     SDL_SetRenderDrawColor(state->renderer, 0xFF, 0x00, 0x00, 0x00);
-    SDL_RenderDrawPoint(state->renderer, int(state->pos(1) * 4), int(state->pos(0) * 4));
+    SDL_RenderDrawPoint(state->renderer, int(state->pos(1) * 2), int(state->pos(0) * 2));
     SDL_RenderSetViewport(state->renderer, NULL);
     SDL_RenderSetScale(state->renderer, 1, 1);
 }

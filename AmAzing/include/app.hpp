@@ -17,7 +17,7 @@ private:
     SDL_Texture *buffTex = nullptr;
     SDL_Texture *sky = nullptr;
     Mix_Music *music = nullptr;
-    std::vector<SDL_Surface *> textures = std::vector<SDL_Surface *> (9, nullptr);
+    std::vector<SDL_Surface *> textures = std::vector<SDL_Surface *> (10, nullptr);
     uint32_t theTexture[64][64];
     void makeGlyphs(std::string fontname);
     void initialize(std::string filename);
@@ -26,7 +26,7 @@ private:
     void drawLine(int x);
     void render2d();
     void render3d();
-    void drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos);
+    double drawTexture(int x, int side, int lineheight, double perpWallDist, int drawstart, int drawend, Vector2d& ray, Vector2i &mapPos);
     void displayFPS(double fps);
 };
 

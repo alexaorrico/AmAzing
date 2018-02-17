@@ -47,6 +47,7 @@
 		60FB280B2036AD8400469F27 /* app.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = app.hpp; path = include/app.hpp; sourceTree = "<group>"; };
 		60FB280C2036AFBB00469F27 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		60FB280E2036B23800469F27 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		60FB280F2037516700469F27 /* maze_map */ = {isa = PBXFileReference; lastKnownFileType = text; name = maze_map; path = AmAzing/maps/maze_map; sourceTree = "<group>"; };
 		FA4035D62036583E00C771B7 /* audio */ = {isa = PBXFileReference; lastKnownFileType = folder; path = audio; sourceTree = "<group>"; };
 		FAF9B582203296C90019E75C /* AmAzing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AmAzing; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAF9B59C203298040019E75C /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
@@ -94,6 +95,7 @@
 		FAF9B579203296C90019E75C = {
 			isa = PBXGroup;
 			children = (
+				60FB280F2037516700469F27 /* maze_map */,
 				60FB280E2036B23800469F27 /* README.md */,
 				FAF9B584203296C90019E75C /* AmAzing */,
 				FAF9B583203296C90019E75C /* Products */,
